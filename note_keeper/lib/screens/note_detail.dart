@@ -86,8 +86,48 @@ class NoteDetailState extends State<NoteDetail> {
                     )
                 ),
               ),
-            )
+            ),
 
+            Padding(
+              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: RaisedButton(
+                      color: Theme.of(context).primaryColorDark,
+                      textColor: Theme.of(context).primaryColorLight,
+                      child: Text(
+                        'Save',
+                        textScaleFactor: 1.5,
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          debugPrint("Save");
+                        });
+                      },
+                    ),
+                  ),
+
+                  Container(width: 5.0,),
+
+                  Expanded(
+                    child: RaisedButton(
+                      color: Theme.of(context).primaryColorDark,
+                      textColor: Theme.of(context).primaryColorLight,
+                      child: Text(
+                        'Delete',
+                        textScaleFactor: 1.5,
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          debugPrint("Delete");
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            )
 
           ],
         ),
