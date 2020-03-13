@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:notekeeper/models/note.dart';
+import 'package:notekeeper/utils/database_helper.dart';
 import 'package:notekeeper/screens/note_detail.dart';
+import 'package:sqflite/sqflite.dart';
 
 class NoteList extends StatefulWidget {
   @override
@@ -11,11 +15,17 @@ class NoteList extends StatefulWidget {
 
 class NoteListState extends State<NoteList> {
 
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Note> noteList;
   int count = 0;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
+    if(noteList == null){
+      noteList = List<Note>();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Notes'),
@@ -66,6 +76,21 @@ class NoteListState extends State<NoteList> {
           );
       },
     );
+  }
+
+  // Return the priority color
+  Color getPriorityColor(int priority){
+    switch(priority) {
+      case 1:
+        return Colors.red;
+        break;
+      case 2:
+        return Colors.yellow;
+        break;
+
+      default:
+        return Colors.yellow;
+    }
   }
 
   void navigateToDetail(String title) {
