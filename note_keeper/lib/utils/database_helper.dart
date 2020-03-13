@@ -62,5 +62,26 @@ class DatabaseHelper {
     return result;
   }
 
-  // Update Operation:
+  // Update Operation: Update a not object and save it to database
+  Future<int> updateNote(Note note) async {
+    var db = await this.database;
+    var result = await db.update(noteTable, note.toMap(), where: '$colId = ?', whereArgs: [note.id]);
+    return result;
+  }
+
+  // Delete Operation: Delete a Note object and sate it to database
+  Future<int> deleteNote(int id) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $noteTable WHERE $colId = $id');
+    return result;
+  }
+
+  // Get number of Note objects in database
+  Future<int> getCount() async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $noteTable');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+
 }
