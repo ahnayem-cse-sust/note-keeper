@@ -31,7 +31,10 @@ class NoteDetailState extends State<NoteDetail> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = Theme.of(context).textTheme.title;
+    TextStyle textStyle = Theme
+        .of(context)
+        .textTheme
+        .title;
 
     titleController.text = note.title;
     descriptionController.text = note.description;
@@ -61,11 +64,15 @@ class NoteDetailState extends State<NoteDetail> {
                           child: Text(dropDownStringItem),
                         );
                       }).toList(),
+
                       style: textStyle,
-                      value: 'Low',
+
+                      value: getPriorityAsString(note.priority),
+
                       onChanged: (valueSelectedByUser) {
                         setState(() {
                           debugPrint('User selected $valueSelectedByUser');
+                          updatePriorityAsInt(valueSelectedByUser);
                         });
                       }),
                 ),
@@ -76,6 +83,7 @@ class NoteDetailState extends State<NoteDetail> {
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something printed');
+                      updateTitle();
                     },
                     decoration: InputDecoration(
                         labelText: 'Title',
@@ -87,10 +95,11 @@ class NoteDetailState extends State<NoteDetail> {
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
-                    controller: titleController,
+                    controller: descriptionController,
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something printed');
+                      updateDescription();
                     },
                     decoration: InputDecoration(
                         labelText: 'Description',
@@ -105,8 +114,12 @@ class NoteDetailState extends State<NoteDetail> {
                     children: <Widget>[
                       Expanded(
                         child: RaisedButton(
-                          color: Theme.of(context).primaryColorDark,
-                          textColor: Theme.of(context).primaryColorLight,
+                          color: Theme
+                              .of(context)
+                              .primaryColorDark,
+                          textColor: Theme
+                              .of(context)
+                              .primaryColorLight,
                           child: Text(
                             'Save',
                             textScaleFactor: 1.5,
@@ -114,6 +127,7 @@ class NoteDetailState extends State<NoteDetail> {
                           onPressed: () {
                             setState(() {
                               debugPrint("Save");
+                              _save();
                             });
                           },
                         ),
@@ -123,8 +137,12 @@ class NoteDetailState extends State<NoteDetail> {
                       ),
                       Expanded(
                         child: RaisedButton(
-                          color: Theme.of(context).primaryColorDark,
-                          textColor: Theme.of(context).primaryColorLight,
+                          color: Theme
+                              .of(context)
+                              .primaryColorDark,
+                          textColor: Theme
+                              .of(context)
+                              .primaryColorLight,
                           child: Text(
                             'Delete',
                             textScaleFactor: 1.5,
@@ -132,6 +150,7 @@ class NoteDetailState extends State<NoteDetail> {
                           onPressed: () {
                             setState(() {
                               debugPrint("Delete");
+                              _delete();
                             });
                           },
                         ),
@@ -146,7 +165,7 @@ class NoteDetailState extends State<NoteDetail> {
   }
 
   void moveToLastScreen() {
-    Navigator.pop(context);
+    Navigator.pop(context,true);
   }
 
   // Convert the String priority in the form of integer before saving it to database
@@ -164,7 +183,7 @@ class NoteDetailState extends State<NoteDetail> {
   // Convert int priority to string priority
   String getPriorityAsString(int value) {
     String priority;
-    switch(value) {
+    switch (value) {
       case 1:
         priority = _priorities[0];
         break;
@@ -173,5 +192,58 @@ class NoteDetailState extends State<NoteDetail> {
         break;
     }
     return priority;
+  }
+
+  void updateTitle() {
+    note.title = titleController.text;
+  }
+
+  void updateDescription() {
+    note.description = descriptionController.text;
+  }
+
+  void _save() async {
+    moveToLastScreen();
+
+    note.date = DateFormat.yMMMd().format(DateTime.now());
+    int result;
+    if (note.id != null) {
+      result = await helper.updateNote(note);
+    } else {
+      result = await helper.insertNote(note);
+    }
+
+    if (result != 0) {
+      _showAlertDialog('Status', 'Note Saved Successfully');
+    } else {
+      _showAlertDialog('Status', 'Problem saving note');
+    }
+  }
+
+  void _delete() async {
+
+    moveToLastScreen();
+
+    if (note.id == null) {
+      _showAlertDialog('Status', "No note was deleted");
+    }
+
+    int result = await helper.deleteNote(note.id);
+    if (result != 0){
+      _showAlertDialog('Status', "Note Deleted Successfully");
+    } else {
+      _showAlertDialog('Status', 'Error Occured while deleting note');
+    }
+  }
+
+  void _showAlertDialog(String title, String message) {
+    AlertDialog alertDialog = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(
+        context: context,
+        builder: (_) => alertDialog
+    );
   }
 }
