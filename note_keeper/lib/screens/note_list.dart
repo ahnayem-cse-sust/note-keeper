@@ -21,6 +21,7 @@ class NoteListState extends State<NoteList> {
   Widget build(BuildContext context) {
     if (noteList == null) {
       noteList = List<Note>();
+      updateListView();
     }
 
     return Scaffold(
@@ -50,17 +51,22 @@ class NoteListState extends State<NoteList> {
           elevation: 2.0,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.yellow,
-              child: Icon(Icons.keyboard_arrow_right),
+              backgroundColor: getPriorityColor(this.noteList[position].priority),
+              child: getPriorityIcon(this.noteList[position].priority),
             ),
             title: Text(
-              'Dummy Title',
+              this.noteList[position].title,
               style: titleStyle,
             ),
-            subtitle: Text('Dummy Date'),
-            trailing: Icon(
-              Icons.delete,
-              color: Colors.grey,
+            subtitle: Text(this.noteList[position].date),
+            trailing: GestureDetector(
+              child: Icon(
+                Icons.delete,
+                color: Colors.grey,
+              ),
+              onTap: (){
+                _delete(context, noteList[position]);
+              },
             ),
             onTap: () {
               debugPrint("ListTile Tapped");
@@ -102,9 +108,37 @@ class NoteListState extends State<NoteList> {
     }
   }
 
+  void _delete(BuildContext context, Note note) async {
+
+    int result = await databaseHelper.deleteNote(note.id);
+    if(result != 0){
+      _showSnackBar(context, 'Note Deleted Successfully');
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+
+    final snackBar = SnackBar(content: Text(message));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
   void navigateToDetail(String title) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return NoteDetail(title);
     }));
+  }
+
+  void updateListView() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    dbFuture.then((database){
+
+      Future<List<Note>> noteListFuture = databaseHelper.getNoteList();
+      noteListFuture.then((noteList){
+        setState(() {
+          this.noteList = noteList;
+          this.count = noteList.length;
+        });
+      });
+    });
   }
 }
