@@ -32,7 +32,7 @@ class NoteListState extends State<NoteList> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint('FAB Clicked');
-          navigateToDetail('Add Note');
+          navigateToDetail(Note('','',2) ,'Add Note');
         },
         tooltip: 'Add Note',
         child: Icon(Icons.add),
@@ -70,7 +70,7 @@ class NoteListState extends State<NoteList> {
             ),
             onTap: () {
               debugPrint("ListTile Tapped");
-              navigateToDetail('Edit Note');
+              navigateToDetail(this.noteList[position] ,'Edit Note');
             },
           ),
         );
@@ -115,7 +115,7 @@ class NoteListState extends State<NoteList> {
       _showSnackBar(context, 'Note Deleted Successfully');
       updateListView();
     }
-    
+
   }
 
   void _showSnackBar(BuildContext context, String message) {
@@ -124,9 +124,9 @@ class NoteListState extends State<NoteList> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-  void navigateToDetail(String title) {
+  void navigateToDetail(Note note, String title) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return NoteDetail(title);
+      return NoteDetail(note,title);
     }));
   }
 
