@@ -10,19 +10,16 @@ class NoteList extends StatefulWidget {
   State<StatefulWidget> createState() {
     return NoteListState();
   }
-
 }
 
 class NoteListState extends State<NoteList> {
-
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Note> noteList;
   int count = 0;
 
   @override
   Widget build(BuildContext context) {
-
-    if(noteList == null){
+    if (noteList == null) {
       noteList = List<Note>();
     }
 
@@ -30,57 +27,54 @@ class NoteListState extends State<NoteList> {
       appBar: AppBar(
         title: Text('Notes'),
       ),
-
       body: getNoteListView(),
-
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           debugPrint('FAB Clicked');
           navigateToDetail('Add Note');
         },
-
         tooltip: 'Add Note',
-
         child: Icon(Icons.add),
-
       ),
     );
   }
 
   ListView getNoteListView() {
-
     TextStyle titleStyle = Theme.of(context).textTheme.subhead;
 
     return ListView.builder(
-        itemCount: count,
+      itemCount: count,
       itemBuilder: (BuildContext context, int position) {
-          return Card(
-            color: Colors.white,
-            elevation: 2.0,
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.yellow,
-                child: Icon(Icons.keyboard_arrow_right),
-              ),
-              title: Text('Dummy Title', style: titleStyle,),
-
-              subtitle: Text('Dummy Date'),
-
-              trailing: Icon(Icons.delete, color: Colors.grey,),
-
-              onTap: () {
-                debugPrint("ListTile Tapped");
-                navigateToDetail('Edit Note');
-              },
+        return Card(
+          color: Colors.white,
+          elevation: 2.0,
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.yellow,
+              child: Icon(Icons.keyboard_arrow_right),
             ),
-          );
+            title: Text(
+              'Dummy Title',
+              style: titleStyle,
+            ),
+            subtitle: Text('Dummy Date'),
+            trailing: Icon(
+              Icons.delete,
+              color: Colors.grey,
+            ),
+            onTap: () {
+              debugPrint("ListTile Tapped");
+              navigateToDetail('Edit Note');
+            },
+          ),
+        );
       },
     );
   }
 
   // Return the priority color
-  Color getPriorityColor(int priority){
-    switch(priority) {
+  Color getPriorityColor(int priority) {
+    switch (priority) {
       case 1:
         return Colors.red;
         break;
@@ -93,8 +87,23 @@ class NoteListState extends State<NoteList> {
     }
   }
 
+  // Returns the priority icon
+  Icon getPriorityIcon(int priority) {
+    switch (priority) {
+      case 1:
+        return Icon(Icons.play_arrow);
+        break;
+      case 2:
+        return Icon(Icons.keyboard_arrow_right);
+        break;
+
+      default:
+        return Icon(Icons.keyboard_arrow_right);
+    }
+  }
+
   void navigateToDetail(String title) {
-    Navigator.push(context, MaterialPageRoute(builder: (context){
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
       return NoteDetail(title);
     }));
   }
