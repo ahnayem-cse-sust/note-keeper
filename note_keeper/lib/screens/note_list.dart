@@ -135,8 +135,6 @@ class NoteListState extends State<NoteList> {
   }
 
   void updateListView() {
-
-
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
     dbFuture.then((database){
 
